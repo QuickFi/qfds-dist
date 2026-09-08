@@ -4,7 +4,7 @@ Colour, typography, spacing, elevation and the runtime brand engine, for iOS, An
 
 **This repository is generated.** It is assembled by `scripts/build-dist.js` in QuickFi's private design-system repo and force-pushed here on every release. Pull requests and direct commits are overwritten by the next tag — raise anything you find with the design-system owner instead.
 
-Current release: **1.0.0**
+Current release: **1.0.1**
 
 ---
 
@@ -14,10 +14,10 @@ Paste the link. The version is pinned in the URL, so the stylesheet never change
 
 ```html
 <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/QuickFi/qfds-dist@v1.0.0/web/quickfi.css">
+      href="https://cdn.jsdelivr.net/gh/QuickFi/qfds-dist@v1.0.1/web/quickfi.css">
 ```
 
-Swap `v1.0.0` for a later tag to take a new release. `@v1` also resolves, and floats to the newest `1.x` — convenient, but it means a release can change your styling without you doing anything.
+Swap `v1.0.1` for a later tag to take a new release. `@v1` also resolves, and floats to the newest `1.x` — convenient, but it means a release can change your styling without you doing anything.
 
 Every token is a custom property (`--qf-text-primary`, `--qf-space-md`, …) and every type role is a utility class (`.qf-body`, `.qf-numeric-lg`, …). Light and dark both ship; dark applies on `prefers-color-scheme` or on an explicit `data-theme="dark"`.
 
@@ -26,7 +26,7 @@ Every token is a custom property (`--qf-text-primary`, `--qf-space-md`, …) and
 Swift Package Manager, no credentials:
 
 ```swift
-.package(url: "https://github.com/QuickFi/qfds-dist.git", from: "1.0.0")
+.package(url: "https://github.com/QuickFi/qfds-dist.git", from: "1.0.1")
 ```
 
 ```swift
@@ -58,7 +58,7 @@ dependencyResolutionManagement {
 
 ```kotlin
 // app/build.gradle.kts
-implementation("io.github.quickfi:design-system-android:1.0.0")
+implementation("io.github.quickfi:design-system-android:1.0.1")
 ```
 
 ```kotlin

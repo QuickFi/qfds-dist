@@ -66,24 +66,30 @@ public enum QuickFiColor {
     /// Carries the same faint per-credit-line tint as every container token (tokens/brand-engine.md).
     /// Takes textPrimary only — textLink is measurably below the text floor on it, in every registered and synthetic credit line, and is not rated for this fill.
     /// DARKER than its parent in light, LIGHTER in dark.
-    public static let subsurface = Color.qf(0xEAEAEE, 0x3C3C44)
+    public static let subsurface = Color.qf(0xD8D8DB, 0x3C3C44)
+    /// The page wash's corner tone. BRAND-DERIVED and DARK-MODE ONLY — this static value is container/background itself, so an unbranded page is flat, and so is every light page. See tokens/brand-engine.md, 'The page wash'.
+    /// Never set this by hand and never paint a page gradient by hand: the stops (6/24/74/94) and the angle (150deg) are the engine's contract, and the derived corner holds the page's OWN lightness so text stays legible on it.
+    public static let backgroundWash = Color.qf(0xF1F1F4, 0x242424)
+    /// The page wash's mid-band — black at 60% pre-composited over the page, so four OPAQUE stops render identically on CSS, SwiftUI and Compose. BRAND-DERIVED and DARK-MODE ONLY; this static value is container/background itself.
+    /// It is deliberately DARKER than container/background once derived, which for any other token would read as a hole. A hole looks recessed FROM the page; this is part of the page, and it moves every obligation the safe way — light text gains contrast, cards gain separation.
+    public static let backgroundWashHaze = Color.qf(0xF1F1F4, 0x242424)
 
     // MARK: - Text
     /// Titles, body, values.
     /// Also the label of an OUTLINE button.
     public static let textPrimary = Color.qf(0x0B0A0F, 0xF3F3F6)
-    /// Supporting copy, row detail.
+    /// Supporting copy, row detail, captions.
     public static let textSecondary = Color.qf(0x3B3B3B, 0xE6E6E6)
-    /// Timestamps, hints, placeholders.
-    /// Still AA on page AND raised.
+    /// Timestamps and hints. NOT placeholders — a placeholder sits in the container/subsurface well of an input, where this measures 3.62:1 light / 3.86:1 dark; use text/secondary.
+    /// Still AA on container/background AND container/surface — and ONLY there. Everywhere else it lands 3.55-4.02:1, under the 4.5:1 floor: use text/primary or text/secondary. See the pairing table.
     public static let textTertiary = Color.qf(0x6D6D72, 0x9999A0)
-    /// Disabled control labels ONLY.
-    /// WCAG-exempt.
+    /// Disabled control labels ONLY, never content.
+    /// Below AA by design — WCAG 1.4.3 exempts the text of an inactive control by name, and a disabled label that clears the active floor reads as enabled.
     public static let textDisabled = Color.qf(0xA7A7AD, 0x68686F)
     /// Label on every action/filled/* intent and on solid feedback fills.
     /// MODE-SPLIT: white in light, near-black in dark.
     public static let textOnAction = Color.qf(0xFFFFFF, 0x090C08)
-    /// Label on actionFilledDisabled, 4.6:1.
+    /// Label on actionFilledDisabled. Nothing else — never textDisabled, which is a content token. 4.6:1.
     public static let textOnActionDisabled = Color.qf(0x606067, 0xBABAC1)
     /// The numeral on the count badge. Nothing else.
     /// MODE-SPLIT: white in light, near-black in dark — same logic as textOnAction, kept separate so badges can retheme independently.
@@ -93,7 +99,7 @@ public enum QuickFiColor {
     /// The one label pairing in this system with no contrast audit behind it. On the light success fill white measures 3.42:1 and near-black 5.77:1, but near-black on a saturated mid-green reads as smudged — WCAG's luminance-only ratio does not model that. The pairing was dropped from the audit by decision; changing actionFilledSuccess will not fail a build here.
     public static let textOnActionSuccess = Color.qf(0xFFFFFF, 0x0B0A0F)
     /// Tappable text: inline links and the label of a TEXT button.
-    /// Not rated on backgroundSunken as a selected/pressed wash — use textPrimary there instead.
+    /// Not rated on container/subsurface or actionSelected — measured 2.67-3.46:1 across the registered credit lines once BOTH are brand-derived, and never above 3.59:1 across the 216-seed sweep. Use textPrimary on either.
     /// The neutral fallback is feedback/info-text's value in both modes — the blue a link reads as when no credit line has resolved, rather than the near-black/near-white it used to inherit from the text ramp.
     /// BRAND-DERIVED. This value is the neutral fallback — used before a credit line resolves, and by any brand-agnostic surface (marketing, a program-less login screen). Once a credit line is known, the runtime brand engine (tokens/brand-engine.md) overrides this same identifier with that credit line's accent tone; the swap is a cross-fade, not a reload.
     public static let textLink = Color.qf(0x0867B1, 0x87C2FE)
@@ -110,7 +116,7 @@ public enum QuickFiColor {
     // MARK: - Border
     /// Hairlines, dividers, input strokes, table rules — and the border of a DISABLED outline button.
     /// NOT a control boundary: at 1.22:1 it cannot carry one.
-    public static let border = Color.qf(0xE8E8EA, 0x54545D)
+    public static let border = Color.qf(0xE0E0E0, 0x54545D)
     /// Focus ring.
     /// 2pt, never thinner.
     /// BRAND-DERIVED, same override relationship as textLink: this value is the neutral fallback pre-resolution; the runtime brand engine (tokens/brand-engine.md) supplies the credit line's tone once known.

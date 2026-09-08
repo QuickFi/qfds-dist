@@ -29,7 +29,7 @@ Work back to front. These five are **structural only** — none of them changes 
 | 2. Surface | `container/surface` `#FFFFFF` / `#2C3036` | Cards, sheets, list rows, dialogs, nav bars, tables. Everything lives here. In light mode this is pure white — the lightness ceiling — so it is the LEAST toned of the group, not the most. |
 | 3. Surface-1 | `container/surface-1` `#E3E3E8` / `#393834` | One elevation step ABOVE surface: a tab bar or nav bar sitting over a list of raised rows. |
 | 4. Surface-2 | `container/surface-2` `#D6D6DB` / `#41403C` | One step past surface-1, for whatever needs to read as more prominent still. Neither surface-1 nor surface-2 is required on a screen that never nests this deep — there is no surface-3: a dialog or sheet sits on a scrim, which resets the stack, so a modal reuses `container/background` (full-bleed sheet) or `container/surface` (centred dialog). |
-| 5. Subsurface | `container/subsurface` `#EAEAEE` / `#3C3C44` | Recessed areas **inside** a surface: inputs, wells, disabled fields. |
+| 5. Subsurface | `container/subsurface` `#D8D8DB` / `#3C3C44` | Recessed areas **inside** a surface: inputs, wells, disabled fields. |
 
 Because the background is tinted, surface reads by fill and **needs no border** (1.13 light, 1.17 dark). Surface-1 and surface-2 are each derived to clear a separation floor against every tier already placed before them, not just their immediate neighbour — same rule, same floor, in both modes.
 
@@ -52,7 +52,7 @@ Because the background is tinted, surface reads by fill and **needs no border** 
 | `container/surface` | text/primary · secondary · tertiary — all content lives here |
 | `container/surface-1` | text/primary · text/secondary — text/tertiary is NOT rated here in either mode |
 | `container/surface-2` | text/primary · text/secondary — text/tertiary is NOT rated here in either mode |
-| `container/subsurface` | text/primary · text/secondary |
+| `container/subsurface` | text/primary · text/secondary — text/tertiary is NOT rated here in either mode |
 | `action/selected` | text/primary — text/link measures below the text floor on it and is not permitted |
 | `action/filled/* — neutral · notify · danger, any state` | text/on-action — never text/primary |
 | `action/filled/success — any state` | text/on-action-success — its own identifier, on the same white-light/near-black-dark split as text/on-action. Deliberately unaudited: see the Text group |
@@ -76,25 +76,25 @@ Format: light / dark.
 
 | Token | Values | Use |
 |---|---|---|
-| `brand/charcoal` | `#3A3A3C` / `#3A3A3C` | The wordmark grey. The neutral ramp derives from its hue. |
-| `brand/green` | `#25AB3A` / `#25AB3A` | The brand green. **Mode-stable** — one value works on white and on the dark surface. 3.02:1 on white: fills, headings 24pt+ and borders only. Also QuickFi's own seed for the runtime brand engine (see below) — the same derivation every credit line runs through. |
-| `text/link` | `#0867B1` / `#87C2FE` | Inline tappable text. **Brand-derived** — the values shown here are the neutral fallback, used before a credit line resolves. See the brand engine section below. |
+| `brand/charcoal` | `#3A3A3C` / `#3A3A3C` | PRIMITIVE. The neutral anchor; the grey ramp derives from its hue. Never bind a component to this. |
+| `brand/green` | `#25AB3A` / `#25AB3A` | PRIMITIVE. The brand colour, for marks, illustration and marketing artwork. Never bind a component to this directly. It doubles as QuickFi's own seed for the runtime brand engine (tokens/brand-engine.md) — the credit-line accent and container tokens derive from a seed exactly like this one, per partner. **Mode-stable** — one value works on white and on the dark surface, at 3.02:1 on white: fills, headings 24pt+ and borders only. |
+| `text/link` | `#0867B1` / `#87C2FE` | Tappable text: inline links and the label of a TEXT button. Not rated on `container/subsurface` or `action/selected` — measured 2.67-3.46:1 across the registered credit lines once BOTH are brand-derived, and never above 3.59:1 across the 216-seed sweep. Use `text/primary` on either. The neutral fallback is `feedback/info-text`'s value in both modes — the blue a link reads as when no credit line has resolved, rather than the near-black/near-white it used to inherit from the text ramp. BRAND-DERIVED. This value is the neutral fallback — used before a credit line resolves, and by any brand-agnostic surface (marketing, a program-less login screen). Once a credit line is known, the runtime brand engine (tokens/brand-engine.md) overrides this same identifier with that credit line's accent tone; the swap is a cross-fade, not a reload. |
 
 ### Text — pick by emphasis, then check the pairing table
 
 | Token | Values | Use | On surface |
 |---|---|---|---|
-| `text/primary` | `#0B0A0F` / `#F3F3F6` | Headings, body copy, numeric values. | 19.73 / 11.98 |
+| `text/primary` | `#0B0A0F` / `#F3F3F6` | Titles, body, values. Also the label of an OUTLINE button. | 19.73 / 11.98 |
 | `text/secondary` | `#3B3B3B` / `#E6E6E6` | Supporting copy, row detail, captions. | 11.20 / 10.63 |
-| `text/tertiary` | `#6D6D72` / `#9999A0` | Timestamps, hints, placeholders. Torn between this and secondary? Choose secondary. Rated ONLY on `container/background` and `container/surface` — see *Building a screen* above. | 5.15 / 4.69 |
-| `text/disabled` | `#A7A7AD` / `#68686F` | Disabled **control labels** only, never content. Below AA by design; WCAG permits this for disabled controls. | 2.39 / 2.40 |
-| `text/on-action` | `#FFFFFF` / `#090C08` | Label on every `action/filled/*` intent and solid feedback fills. **Mode-split**: white in light, near-black in dark. | — |
-| `text/on-action-disabled` | `#606067` / `#BABAC1` | Label on `action/filled/disabled`. **Nothing else.** | — |
-| `text/on-badge` | `#FFFFFF` / `#090C08` | Numeral on `feedback/badge`. **Nothing else.** Mode-split like `text/on-action`. | — |
-| `text/on-action-success` | `#FFFFFF` / `#0B0A0F` | Label on `action/filled/success`. **Nothing else.** Mode-split like `text/on-action`. The one label pairing here with **no audit row**, deliberately: WCAG scores near-black higher on the light success fill, but near-black on a saturated mid-green reads as smudged. Carried on judgement — nothing fails if `action/filled/success` moves, so re-look by eye when it does. | — |
-| `text/link` | `#0867B1` / `#87C2FE` | Inline tappable text. On web, add an underline. | 5.86 / 7.06 |
-| `text/cursor` | `#0B0A0F` / `#F3F3F6` | The caret in a text field. **Nothing else.** Brand-derived to the same value as `border/focus` — a caret and a focus ring are one signal on one control. Rated as a graphic (3:1): a caret is a thin mark, not something anyone reads. | 16.44 / 9.87 |
-| `text/selection-bg` | `#C9C9CE` / `#494844` | The wash behind selected text **inside a field**. Brand-derived, and deliberately not `action/selected`: a selected row sits on `container/surface`, selected text sits in the `container/subsurface` well of an input. `text/primary` must clear 4.5:1 on it — the pairing Material never audits. | 11.96 / 8.27 |
+| `text/tertiary` | `#6D6D72` / `#9999A0` | Timestamps and hints. NOT placeholders — a placeholder sits in the `container/subsurface` well of an input, where this measures 3.62:1 light / 3.86:1 dark; use `text/secondary`. Still AA on `container/background` AND `container/surface` — and ONLY there. Everywhere else it lands 3.55-4.02:1, under the 4.5:1 floor: use `text/primary` or `text/secondary`. See the pairing table. | 5.15 / 4.69 |
+| `text/disabled` | `#A7A7AD` / `#68686F` | Disabled control labels ONLY, never content. Below AA by design — WCAG 1.4.3 exempts the text of an inactive control by name, and a disabled label that clears the active floor reads as enabled. | 2.39 / 2.40 |
+| `text/on-action` | `#FFFFFF` / `#090C08` | Label on every `action/filled/*` intent and on solid feedback fills. MODE-SPLIT: white in light, near-black in dark. | — |
+| `text/on-action-disabled` | `#606067` / `#BABAC1` | Label on `action/filled/disabled`. Nothing else — never `text/disabled`, which is a content token. 4.6:1. | — |
+| `text/on-badge` | `#FFFFFF` / `#090C08` | The numeral on the count badge. Nothing else. MODE-SPLIT: white in light, near-black in dark — same logic as `text/on-action`, kept separate so badges can retheme independently. | — |
+| `text/on-action-success` | `#FFFFFF` / `#0B0A0F` | Label on `action/filled/success`. Nothing else. Mode-split, same as `text/on-action`: white in light, near-black in dark. The one label pairing in this system with no contrast audit behind it. On the light success fill white measures 3.42:1 and near-black 5.77:1, but near-black on a saturated mid-green reads as smudged — WCAG's luminance-only ratio does not model that. The pairing was dropped from the audit by decision; changing `action/filled/success` will not fail a build here. | — |
+| `text/link` | `#0867B1` / `#87C2FE` | Tappable text: inline links and the label of a TEXT button. Not rated on `container/subsurface` or `action/selected` — measured 2.67-3.46:1 across the registered credit lines once BOTH are brand-derived, and never above 3.59:1 across the 216-seed sweep. Use `text/primary` on either. The neutral fallback is `feedback/info-text`'s value in both modes — the blue a link reads as when no credit line has resolved, rather than the near-black/near-white it used to inherit from the text ramp. BRAND-DERIVED. This value is the neutral fallback — used before a credit line resolves, and by any brand-agnostic surface (marketing, a program-less login screen). Once a credit line is known, the runtime brand engine (tokens/brand-engine.md) overrides this same identifier with that credit line's accent tone; the swap is a cross-fade, not a reload. | 5.86 / 7.06 |
+| `text/cursor` | `#0B0A0F` / `#F3F3F6` | The caret in a text field. Nothing else. BRAND-DERIVED, to the same value as `border/focus` — a caret and a focus ring are one signal on one control, both saying THIS is where typing goes. This value is the neutral fallback shown before a credit line resolves. Left unbound, Material resolves the caret to its primary slot, which in this system is `action/filled/neutral` charcoal — a credit line's field would blink in QuickFi's grey. Rated as a graphic (3:1), not as text: a caret is a thin mark, not something anyone reads. Measured against `container/subsurface`, `container/surface` and `container/background`. | 13.87 / 9.87 |
+| `text/selection-bg` | `#C9C9CE` / `#494844` | The wash behind selected text INSIDE a field. Nothing else. BRAND-DERIVED, and deliberately NOT the same token as `action/selected`. A selected row sits on `container/surface` or surface-1; selected text sits in the `container/subsurface` well of an input. Different backdrop, different separation obligation, so they cannot share one value — the two only share a starting point, because the neutral is the neutral. `text/primary` must clear 4.5:1 on it. That is the pairing Material never audits, and the reason an unbound selection wash is a risk on a recessed field. | 11.96 / 8.27 |
 
 ### Action — fills of an interactive control, by intent and state
 
@@ -113,10 +113,10 @@ SUCCESS is not a BRAND intent under another name. Its hue is aligned to `feedbac
 
 | Token | Values | Use |
 |---|---|---|
-| `action/filled/disabled` | `#DDDDE7` / `#494950` | The ONE disabled fill, shared by every intent — a dead button has no intent. Pair with `text/on-action-disabled`. |
-| `action/selected` | `#C9C9CE` / `#494844` | The ONLY token in the system whose job is purely interaction state, not structure — the pressed wash for an OUTLINE/TEXT button, and the fill of a selected row, chip or tab. Audited against both `container/surface` and `container/surface-1`. Takes `text/primary` only — `text/link` is not rated on it. **Brand-derived at runtime**: the value shown here is the neutral fallback before a credit line resolves. |
-| `border/default` | `#E8E8EA` / `#54545D` | Hairlines, dividers, input strokes, table rules. |
-| `border/focus` | `#0B0A0F` / `#F3F3F6` | Focus ring, 2px, never thinner. Mandatory on web. **Brand-derived** — values shown are the neutral fallback; see below. |
+| `action/filled/disabled` | `#DDDDE7` / `#494950` | The ONE disabled fill, shared by every intent — a dead button has no intent. Desaturated — reads inert, not brand. Pair with `text/on-action-disabled`. |
+| `action/selected` | `#C9C9CE` / `#494844` | The ONLY token in the system whose job is purely interaction state, not structure. Pressed fill for an OUTLINE or TEXT button; fill for a selected row, chip or tab. Audited against both `container/surface` and `container/surface-1` — the two real layers it sits on top of — not just one. Takes `text/primary` only — `text/link` is not rated on it, same as `container/subsurface`. BRAND-DERIVED. This value is the neutral fallback used before a credit line resolves; the runtime brand engine (tokens/brand-engine.md) then washes it with that credit line's hue, one chroma step stronger than the container wash, and keeps its own separation floors — including one against `action/filled/disabled` that no static audit ever measured. |
+| `border/default` | `#E0E0E0` / `#54545D` | Hairlines, dividers, input strokes, table rules — and the border of a DISABLED outline button. NOT a control boundary: at 1.22:1 it cannot carry one. |
+| `border/focus` | `#0B0A0F` / `#F3F3F6` | Focus ring. 2pt, never thinner. BRAND-DERIVED, same override relationship as `text/link`: this value is the neutral fallback pre-resolution; the runtime brand engine (tokens/brand-engine.md) supplies the credit line's tone once known. |
 
 ### Feedback — three roles per status, always used together
 
@@ -252,9 +252,29 @@ Wider measures need looser leading than either mobile platform, and `display`/`n
 | `icon/*` | sm 16 · md 20 · lg 24 · xl 32 |
 | `touch/*` | min-target 44 · min-gap 8 · control-height 48 · list-row 56 · list-row-two-line 72 |
 
-Spacing is on a 4pt base. `16` is the standard screen edge inset; `24` separates major sections. `radius/md` (8) is the default for buttons, inputs and small cards.
+Spacing is on a 4pt base. `16` is the standard screen edge inset; `24` separates major sections.
 
-**Every border is 2px** — dividers, input strokes, control boundaries and the focus ring alike. One width token, `border/width`.
+### Radius — a button is fixed, a card has a floor
+
+Two rules, and they are different KINDS of rule. Read the difference before binding anything:
+
+**A button is `radius/lg` (12dp), fixed.** Not a minimum, not a default — the value. Every tier (FILLED, OUTLINE, TEXT), every intent, every size, every platform. A button that rounds differently from the button beside it reads as a different control, and the one thing a button must not be is ambiguous about being a button. There is deliberately no larger-button or pill-button variant in this system: a capsule is `radius/full`, which no button binds.
+
+**A card is `radius/xl` (16dp) MINIMUM.** A floor, not a value. A card may round larger where the composition calls for it — `radius/sheet` (24dp) is the top of the authored ladder — but never smaller. Below 16dp a card stops reading as a distinct surface and starts reading as a slightly-rounded rectangle of page, which is precisely the job `container/surface`'s fill is doing and does not need help with.
+
+The gap between them is the point. A card at 16dp and a button at 12dp are 4dp apart, so a button sitting inside a card never looks like a miniature of it. Binding both to one token — which this document did until now, at `radius/md` for buttons and `radius/lg` for cards — collapses that distinction.
+
+`radius/md` (8dp) is not the button token any more. It stays the default for **inputs and small non-card surfaces**: a text field, a well, a table cell. `radius/xs` and `radius/sm` are for marks and hairline-scale detail, never a control.
+
+**Android costs one line per card.** Material 3 has a single `shapes.medium` slot and stock `Button`, `Card`, `Chip` and `Menu` all read it, so it cannot deliver 12dp and 16dp at once. `QuickFiTheme` binds it to `radius/lg`, so **buttons are correct for free** and a stock `Card` rounds 4dp under its floor. Give it the shape explicitly:
+
+```kotlin
+Card(shape = RoundedCornerShape(QuickFiTheme.radius.xl)) { /* ... */ }
+```
+
+Anything reading `shapes.large` already lands on the floor — that slot binds `radius/xl`. On iOS and web there is no shared slot to fight: SwiftUI takes `QuickFiRadius` directly, and `.qf-button-*` already carries `--qf-radius-lg`.
+
+**Every border this system DRAWS is 2px** — a button outline, a divider, a table rule, the focus ring. One width token, `border/width`. **A text field is the exception:** its resting border takes the platform's own default width, because the field is a native control and its stroke is not ours to set — Compose's `TextField` owns its indicator thickness, UIKit and SwiftUI own theirs, and a browser owns the `input` default. Set the field's border *colour* and leave its width alone.
 
 **Touch minimums:** 44pt target (Apple floor; Material asks 48), 8pt between adjacent targets, 48pt controls, 56pt single-line rows, 72pt two-line rows. These do not apply to pointer input on web.
 
@@ -285,7 +305,7 @@ Two layers per level, a broad ambient pass and a tight contact pass; one layer r
 
 ## Component recipes
 
-**Buttons — three tiers.** All share `radius/md`, `touch/control-height` min height, and the `label` type role.
+**Buttons — three tiers.** All share `radius/lg` (12dp — fixed, never a minimum; see *Radius* above), `touch/control-height` min height, and the `label` type role.
 
 | Tier | Fill | Border | Label | Hover (web) | Pressed | Disabled |
 |---|---|---|---|---|---|---|
@@ -305,9 +325,20 @@ While a text button is hovered or pressed its label shifts to `text/primary` —
 
 Press feedback on outline and text tiers is deliberately subtle (1.11–1.21) because touch confirms it. On web, pair it with hover rather than relying on it alone.
 
-**Card** — `container/surface` fill, `radius/lg`, `spacing/sm` to `spacing/md` padding. No border needed on a tinted background.
+**Card** — `container/surface` fill, `radius/xl` (16dp) or larger — a floor, not a value; see *Radius* above — `spacing/sm` to `spacing/md` padding. No border needed on a tinted background.
 
-**Text input** — `container/subsurface` fill, `border/default` 2px stroke, `radius/md`, `touch/control-height` min height, `text/primary` value, `text/tertiary` placeholder. On focus, `border/focus` at 2px.
+**Text input** — `container/subsurface` fill, `radius/md`, `touch/control-height` min height, `text/primary` value, `text/secondary` placeholder (NOT `text/tertiary` — it measures 3.62:1 light / 3.86:1 dark in this well, below the 4.5:1 floor). On focus, `border/focus` at 2px.
+
+**A field keeps `border/default` as its border colour wherever it sits** — one field, one look. The *width* is the platform's default, never `border/width`. What changes with the backdrop is only how much work that border is doing:
+
+| Field sits on | `subsurface` vs its backdrop | `border/default` vs its backdrop |
+|---|---|---|
+| `container/surface` (or `-surface-1`, `-surface-2`) | 1.42:1 / 1.21:1 — the fill draws the well | 1.32:1 / 1.77:1 — the stroke finishes it |
+| `container/background` | 1.26:1 / 1.42:1 — clears the 1.10:1 floor, so the fill draws the well here too | 1.17:1 / 2.07:1 — under the 3:1 WCAG 1.4.11 asks of a control boundary, so the stroke is not what identifies the field |
+
+**The fill identifies the field; the stroke never does.** `container/subsurface` was darkened to make that true on the page — it separated at only 1.06:1 from `container/background` before, so a field there was drawn by neither its fill nor its edge. `border/default` stays under the 3:1 a control boundary would need on either backdrop, which is a deliberate exception of the same kind `action/outline-disabled` carries at 2.12:1 — recorded so nobody reads it as a bug and "fixes" it by darkening the stroke, which would degrade every divider on a raised surface. A field still needs a **visible label**: placeholder-only fields are not sufficient.
+
+A field is the only thing that may sit directly on the background. Cards, rows, banners and every other control still sit on a surface.
 
 **List row** — `container/surface`, `touch/list-row` min height (`list-row-two-line` with a subtitle), `label` primary line, `bodySmall` secondary in `text/secondary`.
 

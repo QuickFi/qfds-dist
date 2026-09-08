@@ -70,7 +70,7 @@
   --qf-numericXs-weight: 600;
 
   /* ---- spacing, radius, touch ---- */
-  --qf-border-width: 0.125rem;   /* 2px — every border in the system */
+  --qf-border-width: 0.125rem;   /* 2px — every border this system DRAWS: button outlines, dividers, table rules, the focus ring. A text field's resting border takes the platform default instead. */
   --qf-spacing-xxs: 0.25rem;   /* 4px */
   --qf-spacing-xs: 0.5rem;   /* 8px */
   --qf-spacing-sm: 0.75rem;   /* 12px */
@@ -128,7 +128,9 @@
   --qf-container-surface: #FFFFFF;
   --qf-container-surface-1: #E3E3E8;
   --qf-container-surface-2: #D6D6DB;
-  --qf-container-subsurface: #EAEAEE;
+  --qf-container-subsurface: #D8D8DB;
+  --qf-container-background-wash: #F1F1F4;
+  --qf-container-background-wash-haze: #F1F1F4;
 
   /* Text */
   --qf-text-primary: #0B0A0F;
@@ -144,7 +146,7 @@
   --qf-text-selection-bg: #C9C9CE;
 
   /* Action and border */
-  --qf-border-default: #E8E8EA;
+  --qf-border-default: #E0E0E0;
   --qf-border-focus: #0B0A0F;
   --qf-action-filled-neutral: #3A3A3C;
   --qf-action-filled-neutral-hover: #313133;
@@ -213,6 +215,8 @@
   --qf-container-surface-1: #393834;
   --qf-container-surface-2: #41403C;
   --qf-container-subsurface: #3C3C44;
+  --qf-container-background-wash: #242424;
+  --qf-container-background-wash-haze: #242424;
 
   /* Text */
   --qf-text-primary: #F3F3F6;
@@ -302,6 +306,8 @@
     --qf-container-surface-1: #393834;
     --qf-container-surface-2: #41403C;
     --qf-container-subsurface: #3C3C44;
+    --qf-container-background-wash: #242424;
+    --qf-container-background-wash-haze: #242424;
 
     /* Text */
     --qf-text-primary: #F3F3F6;
@@ -505,7 +511,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .qf-button-filled {
   background: var(--qf-action-filled-neutral);
   color: var(--qf-text-on-action);
-  border-radius: var(--qf-radius-md);
+  border-radius: var(--qf-radius-lg);
   min-height: var(--qf-touch-control-height);
   font-family: var(--qf-font-body);
   font-size: var(--qf-label-size);
@@ -542,7 +548,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background: transparent;
   color: var(--qf-text-secondary);
   border: var(--qf-border-width) solid var(--qf-action-outline);
-  border-radius: var(--qf-radius-md);
+  border-radius: var(--qf-radius-lg);
   min-height: var(--qf-touch-control-height);
   font-family: var(--qf-font-body);
   font-size: var(--qf-label-size);
@@ -562,7 +568,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background: transparent;
   color: var(--qf-text-link);
   border: 0;
-  border-radius: var(--qf-radius-md);
+  border-radius: var(--qf-radius-lg);
   min-height: var(--qf-touch-control-height);
   font-family: var(--qf-font-body);
   font-size: var(--qf-label-size);
@@ -578,7 +584,23 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* The background is always tinted, so a surface reads by fill and needs no
    border. Nothing sits directly on the background except section headers. */
-body { background: var(--qf-container-background); color: var(--qf-text-primary); }
+/* The page. A credit line's brand wash paints here — the brand engine
+   (tokens/brand-engine.md) sets --qf-container-background-wash and
+   --qf-container-background-wash-haze at runtime, and both FALL BACK to the
+   page itself, so this rule is a flat colour until a credit line resolves and
+   stays flat in light mode by construction. Do not hand-author the gradient:
+   the stops and the angle are the engine's contract, and light mode has no
+   chroma left under a white container/surface. */
+body {
+  background:
+    linear-gradient(150deg,
+      var(--qf-container-background-wash, var(--qf-container-background)) 6%,
+      var(--qf-container-background-wash-haze, var(--qf-container-background)) 24%,
+      var(--qf-container-background) 74%,
+      var(--qf-container-background-wash, var(--qf-container-background)) 94%);
+  background-attachment: fixed;
+  color: var(--qf-text-primary);
+}
 .qf-surface { background: var(--qf-container-surface); border-radius: var(--qf-radius-lg); }
 .qf-surface-1 { background: var(--qf-container-surface-1); border-radius: var(--qf-radius-lg); }
 .qf-surface-2 { background: var(--qf-container-surface-2); border-radius: var(--qf-radius-lg); }
