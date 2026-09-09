@@ -115,8 +115,8 @@ public enum QuickFiColor {
 
     // MARK: - Border
     /// Hairlines, dividers, input strokes, table rules — and the border of a DISABLED outline button.
-    /// NOT a control boundary: at 1.22:1 it cannot carry one.
-    public static let border = Color.qf(0xE0E0E0, 0x54545D)
+    /// NOT a control boundary: at 1.48:1 it cannot carry one.
+    public static let border = Color.qf(0xD4D4D4, 0x54545D)
     /// Focus ring.
     /// 2pt, never thinner.
     /// BRAND-DERIVED, same override relationship as textLink: this value is the neutral fallback pre-resolution; the runtime brand engine (tokens/brand-engine.md) supplies the credit line's tone once known.
@@ -169,11 +169,11 @@ public enum QuickFiColor {
     /// Desaturated — reads inert, not brand.
     /// Pair with textOnActionDisabled.
     public static let actionFilledDisabled = Color.qf(0xDDDDE7, 0x494950)
-    /// Border of an OUTLINE button. border/default cannot do this job — it is a hairline at 1.22:1, and a control boundary needs 3:1.
+    /// Border of an OUTLINE button. border/default cannot do this job — it is a hairline at 1.48:1, and a control boundary needs 3:1.
     /// Set equal to text/secondary's value, so the border and the label read as one weight instead of a faint hairline under a bold label. Kept as its own identifier rather than merged into text/secondary — a border is audited as a graphic pairing (3:1), a label as text (4.5:1), and the two are only coincidentally the same colour today.
     public static let actionOutline = Color.qf(0x3B3B3B, 0xE6E6E6)
     /// Border of a DISABLED OUTLINE button. Nothing else.
-    /// Set equal to text/disabled's value, the same way action/outline is set equal to text/secondary's: a control's boundary and its label are one signal, so they move together. border/default was standing in for this and could not — its own doc says a 1.22:1 hairline is not a control boundary.
+    /// Set equal to text/disabled's value, the same way action/outline is set equal to text/secondary's: a control's boundary and its label are one signal, so they move together. border/default was standing in for this and could not — its own doc says a 1.48:1 hairline is not a control boundary.
     /// Deliberately BELOW the 3:1 that WCAG 1.4.11 asks of a control boundary — 2.39:1 in light, 2.40:1 in dark. 1.4.11 exempts inactive components by name, and a disabled control that clears the active threshold is a disabled control that looks enabled. Audited as separation (1.10) against container/surface and container/background, because the real obligation is that the boundary be visible at all.
     public static let actionOutlineDisabled = Color.qf(0xA7A7AD, 0x68686F)
     /// The ONLY token in the system whose job is purely interaction state, not structure.

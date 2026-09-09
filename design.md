@@ -115,7 +115,7 @@ SUCCESS is not a BRAND intent under another name. Its hue is aligned to `feedbac
 |---|---|---|
 | `action/filled/disabled` | `#DDDDE7` / `#494950` | The ONE disabled fill, shared by every intent — a dead button has no intent. Desaturated — reads inert, not brand. Pair with `text/on-action-disabled`. |
 | `action/selected` | `#C9C9CE` / `#494844` | The ONLY token in the system whose job is purely interaction state, not structure. Pressed fill for an OUTLINE or TEXT button; fill for a selected row, chip or tab. Audited against both `container/surface` and `container/surface-1` — the two real layers it sits on top of — not just one. Takes `text/primary` only — `text/link` is not rated on it, same as `container/subsurface`. BRAND-DERIVED. This value is the neutral fallback used before a credit line resolves; the runtime brand engine (tokens/brand-engine.md) then washes it with that credit line's hue, one chroma step stronger than the container wash, and keeps its own separation floors — including one against `action/filled/disabled` that no static audit ever measured. |
-| `border/default` | `#E0E0E0` / `#54545D` | Hairlines, dividers, input strokes, table rules — and the border of a DISABLED outline button. NOT a control boundary: at 1.22:1 it cannot carry one. |
+| `border/default` | `#D4D4D4` / `#54545D` | Hairlines, dividers, input strokes, table rules — and the border of a DISABLED outline button. NOT a control boundary: at 1.48:1 it cannot carry one. |
 | `border/focus` | `#0B0A0F` / `#F3F3F6` | Focus ring. 2pt, never thinner. BRAND-DERIVED, same override relationship as `text/link`: this value is the neutral fallback pre-resolution; the runtime brand engine (tokens/brand-engine.md) supplies the credit line's tone once known. |
 
 ### Feedback — three roles per status, always used together
@@ -333,8 +333,8 @@ Press feedback on outline and text tiers is deliberately subtle (1.11–1.21) be
 
 | Field sits on | `subsurface` vs its backdrop | `border/default` vs its backdrop |
 |---|---|---|
-| `container/surface` (or `-surface-1`, `-surface-2`) | 1.42:1 / 1.21:1 — the fill draws the well | 1.32:1 / 1.77:1 — the stroke finishes it |
-| `container/background` | 1.26:1 / 1.42:1 — clears the 1.10:1 floor, so the fill draws the well here too | 1.17:1 / 2.07:1 — under the 3:1 WCAG 1.4.11 asks of a control boundary, so the stroke is not what identifies the field |
+| `container/surface` (or `-surface-1`, `-surface-2`) | 1.42:1 / 1.21:1 — the fill draws the well | 1.48:1 / 1.77:1 — the stroke finishes it |
+| `container/background` | 1.26:1 / 1.42:1 — clears the 1.10:1 floor, so the fill draws the well here too | 1.31:1 / 2.07:1 — under the 3:1 WCAG 1.4.11 asks of a control boundary, so the stroke is not what identifies the field |
 
 **The fill identifies the field; the stroke never does.** `container/subsurface` was darkened to make that true on the page — it separated at only 1.06:1 from `container/background` before, so a field there was drawn by neither its fill nor its edge. `border/default` stays under the 3:1 a control boundary would need on either backdrop, which is a deliberate exception of the same kind `action/outline-disabled` carries at 2.12:1 — recorded so nobody reads it as a bug and "fixes" it by darkening the stroke, which would degrade every divider on a raised surface. A field still needs a **visible label**: placeholder-only fields are not sufficient.
 
