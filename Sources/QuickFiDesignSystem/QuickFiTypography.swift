@@ -18,9 +18,14 @@
 //    the file declares internally, not the filename, and vendors are
 //    inconsistent about them.
 //
-//  Usage:
+//  Usage, SwiftUI:
 //    Text("Monthly payment").quickFiText(.label)
 //    Text(amount).quickFiText(.numericLg)       // tabular figures applied
+//
+//  Usage, UIKit — same styles, UIFont-typed:
+//    label.font = QuickFiTextStyle.label.uiFont
+//    label.attributedText = NSAttributedString(string: amount,
+//        attributes: QuickFiTextStyle.numericLg.attributes)   // font + kern + line spacing
 //
 
 import SwiftUI
@@ -138,10 +143,59 @@ public struct QuickFiTextStyle {
     /// scale but this leading does not, so line height drifts above 100%. That
     /// is intended — clamping it would clip ascenders at large sizes.
     public var lineSpacing: CGFloat {
+        max(0, lineHeight - baseUIFont.lineHeight)
+    }
+
+    // MARK: UIKit
+
+    /// UIKit counterpart of `font`: the same face, tabular figures when the
+    /// style asks for them, scaled by Dynamic Type through `UIFontMetrics`
+    /// for the text style `relativeTo` names.
+    public var uiFont: UIFont {
+        var base = baseUIFont
+        if tabularFigures {
+            let descriptor = base.fontDescriptor.addingAttributes([.featureSettings: [[
+                UIFontDescriptor.FeatureKey.type: kNumberSpacingType,
+                UIFontDescriptor.FeatureKey.selector: kMonospacedNumbersSelector,
+            ]]])
+            base = UIFont(descriptor: descriptor, size: 0)
+        }
+        return UIFontMetrics(forTextStyle: uiTextStyle).scaledFont(for: base)
+    }
+
+    /// Attributes for an `NSAttributedString`: `uiFont`, tracking as kern, and
+    /// a paragraph style carrying `lineSpacing` — the same extra-leading model
+    /// the SwiftUI modifier uses, so both frameworks set the same line height
+    /// and drift the same way under Dynamic Type. `uppercase` is not an
+    /// attribute; apply `.uppercased()` to the string.
+    public var attributes: [NSAttributedString.Key: Any] {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = lineSpacing
+        return [.font: uiFont, .kern: tracking, .paragraphStyle: paragraph]
+    }
+
+    /// The face at its base size, unscaled. Registers the bundled fonts first,
+    /// so no caller has to.
+    private var baseUIFont: UIFont {
         QuickFiFont.registerBundledFonts()
-        let resolved = UIFont(name: fontName, size: size)
-            ?? UIFont.systemFont(ofSize: size)
-        return max(0, lineHeight - resolved.lineHeight)
+        return UIFont(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size)
+    }
+
+    private var uiTextStyle: UIFont.TextStyle {
+        switch relativeTo {
+        case .largeTitle:  return .largeTitle
+        case .title:       return .title1
+        case .title2:      return .title2
+        case .title3:      return .title3
+        case .headline:    return .headline
+        case .subheadline: return .subheadline
+        case .body:        return .body
+        case .callout:     return .callout
+        case .footnote:    return .footnote
+        case .caption:     return .caption1
+        case .caption2:    return .caption2
+        default:           return .body  // extraLargeTitle (iOS 17) and anything Apple adds later
+        }
     }
 }
 

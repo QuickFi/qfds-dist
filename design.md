@@ -197,6 +197,8 @@ Eight of the thirteen mobile sizes are **identical** across iOS and Android (`ti
 
 Line heights are deliberately **off** a 4pt grid. That is Apple's ladder, and matching it keeps text flush with nav bars and system controls. Always pass `relativeTo:` so Dynamic Type works.
 
+**Binding on iOS.** SwiftUI: `.quickFiText(.body)` on a `Text`, colours from `QuickFiColor`. UIKit: `QuickFiTextStyle.body.uiFont` for a `UILabel`'s font, `QuickFiTextStyle.body.attributes` for an `NSAttributedString` (font, kern, line spacing), colours from `QuickFiUIColor` — the same identifiers, typed `UIColor`. Both paths scale with Dynamic Type and set the same line height; `overline`'s uppercase is applied by the SwiftUI modifier but is not an attribute, so a UIKit caller uppercases the string.
+
 ### Android — Material 3
 
 | Token | Family | Weight | Size / Line height | Tracking |

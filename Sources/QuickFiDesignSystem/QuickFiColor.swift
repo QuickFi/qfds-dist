@@ -25,12 +25,15 @@ extension UIColor {
                   green: CGFloat((hex >>  8) & 0xFF) / 255.0,
                   blue:  CGFloat( hex        & 0xFF) / 255.0, alpha: 1.0)
     }
+    /// A dynamic colour that resolves per trait collection, so UIKit views
+    /// switch mode with the system the same way the SwiftUI Color does.
+    static func qf(_ light: UInt32, _ dark: UInt32) -> UIColor {
+        UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: dark) : UIColor(hex: light) }
+    }
 }
 extension Color {
     init(hex: UInt32) { self.init(UIColor(hex: hex)) }
-    static func qf(_ light: UInt32, _ dark: UInt32) -> Color {
-        Color(UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: dark) : UIColor(hex: light) })
-    }
+    static func qf(_ light: UInt32, _ dark: UInt32) -> Color { Color(UIColor.qf(light, dark)) }
 }
 
 public enum QuickFiColor {
@@ -68,9 +71,9 @@ public enum QuickFiColor {
     /// DARKER than its parent in light, LIGHTER in dark.
     public static let subsurface = Color.qf(0xD8D8DB, 0x3C3C44)
     /// The page wash's corner tone. BRAND-DERIVED and DARK-MODE ONLY — this static value is container/background itself, so an unbranded page is flat, and so is every light page. See tokens/brand-engine.md, 'The page wash'.
-    /// Never set this by hand and never paint a page gradient by hand: the stops (6/24/74/94) and the angle (150deg) are the engine's contract, and the derived corner holds the page's OWN lightness so text stays legible on it.
+    /// Never set this by hand and never paint a page gradient by hand: two radial glows (top-left and bottom-right, radius 120% of the page so they meet in the middle, haze ring at 75%, faded out at 100%) are the engine's contract, and the derived corner holds the page's OWN lightness so text stays legible on it.
     public static let backgroundWash = Color.qf(0xF1F1F4, 0x242424)
-    /// The page wash's mid-band — black at 60% pre-composited over the page, so four OPAQUE stops render identically on CSS, SwiftUI and Compose. BRAND-DERIVED and DARK-MODE ONLY; this static value is container/background itself.
+    /// The page wash's haze ring — black at 60% pre-composited over the page, so every stop of each glow is OPAQUE and renders identically on CSS, SwiftUI and Compose. BRAND-DERIVED and DARK-MODE ONLY; this static value is container/background itself.
     /// It is deliberately DARKER than container/background once derived, which for any other token would read as a hole. A hole looks recessed FROM the page; this is part of the page, and it moves every obligation the safe way — light text gains contrast, cards gain separation.
     public static let backgroundWashHaze = Color.qf(0xF1F1F4, 0x242424)
 
@@ -246,4 +249,90 @@ public enum QuickFiColor {
     /// Alphas belong to the elevation LEVEL, not to this token: lifted .08/.04, raised .10/.06, floating .12/.08 in light, and roughly four to five times those in dark. Two layers per level, a broad ambient pass and a tight contact pass.
     /// Exempt from the dark-ladder rule. Pure black sits below container/background by construction, which is the point of a shadow and not the hole that rule looks for.
     public static let shadowTint = Color.qf(0x0B0A0F, 0x000000)
+}
+
+/// The same tokens as `QuickFiColor`, typed `UIColor` for UIKit call sites.
+/// One identifier per token, same name in both enums; the doc comments live
+/// on `QuickFiColor` and are not repeated here.
+public enum QuickFiUIColor {
+
+    // MARK: - Brand
+    public static let brandGreen = UIColor.qf(0x25AB3A, 0x25AB3A)
+    public static let brandCharcoal = UIColor.qf(0x3A3A3C, 0x3A3A3C)
+
+    // MARK: - Container
+    public static let background = UIColor.qf(0xF1F1F4, 0x242424)
+    public static let surface = UIColor.qf(0xFFFFFF, 0x2C3036)
+    public static let surface1 = UIColor.qf(0xE3E3E8, 0x393834)
+    public static let surface2 = UIColor.qf(0xD6D6DB, 0x41403C)
+    public static let subsurface = UIColor.qf(0xD8D8DB, 0x3C3C44)
+    public static let backgroundWash = UIColor.qf(0xF1F1F4, 0x242424)
+    public static let backgroundWashHaze = UIColor.qf(0xF1F1F4, 0x242424)
+
+    // MARK: - Text
+    public static let textPrimary = UIColor.qf(0x0B0A0F, 0xF3F3F6)
+    public static let textSecondary = UIColor.qf(0x3B3B3B, 0xE6E6E6)
+    public static let textTertiary = UIColor.qf(0x6D6D72, 0x9999A0)
+    public static let textDisabled = UIColor.qf(0xA7A7AD, 0x68686F)
+    public static let textOnAction = UIColor.qf(0xFFFFFF, 0x090C08)
+    public static let textOnActionDisabled = UIColor.qf(0x606067, 0xBABAC1)
+    public static let textOnBadge = UIColor.qf(0xFFFFFF, 0x090C08)
+    public static let textOnActionSuccess = UIColor.qf(0xFFFFFF, 0x0B0A0F)
+    public static let textLink = UIColor.qf(0x0867B1, 0x87C2FE)
+    public static let textCursor = UIColor.qf(0x0B0A0F, 0xF3F3F6)
+    public static let textSelectionBg = UIColor.qf(0xC9C9CE, 0x494844)
+
+    // MARK: - Border
+    public static let border = UIColor.qf(0xD4D4D4, 0x54545D)
+    public static let borderFocus = UIColor.qf(0x0B0A0F, 0xF3F3F6)
+
+    // MARK: - Action
+    public static let actionFilledNeutral = UIColor.qf(0x3A3A3C, 0xEDEDED)
+    public static let actionFilledNeutralHover = UIColor.qf(0x313133, 0xF2F2F2)
+    public static let actionFilledNeutralPressed = UIColor.qf(0x28282A, 0xF7F7F7)
+    public static let actionFilledNotify = UIColor.qf(0x8B37C3, 0xA96CD3)
+    public static let actionFilledNotifyHover = UIColor.qf(0x7F31B4, 0xB27AD8)
+    public static let actionFilledNotifyPressed = UIColor.qf(0x7229A5, 0xBB88DE)
+    public static let actionFilledDanger = UIColor.qf(0xC8102E, 0xFF8983)
+    public static let actionFilledDangerHover = UIColor.qf(0xB40E27, 0xFF938E)
+    public static let actionFilledDangerPressed = UIColor.qf(0xA00C22, 0xFF9E99)
+    public static let actionFilledSuccess = UIColor.qf(0x2E9F3C, 0x56B25C)
+    public static let actionFilledSuccessHover = UIColor.qf(0x2A9237, 0x64B869)
+    public static let actionFilledSuccessPressed = UIColor.qf(0x288C35, 0x6ABB70)
+    public static let actionFilledInfo = UIColor.qf(0x1778C9, 0x66A3E2)
+    public static let actionFilledInfoHover = UIColor.qf(0x156EB9, 0x72AAE4)
+    public static let actionFilledInfoPressed = UIColor.qf(0x146AB1, 0x78AEE5)
+    public static let actionFilledDisabled = UIColor.qf(0xDDDDE7, 0x494950)
+    public static let actionOutline = UIColor.qf(0x3B3B3B, 0xE6E6E6)
+    public static let actionOutlineDisabled = UIColor.qf(0xA7A7AD, 0x68686F)
+    public static let actionSelected = UIColor.qf(0xC9C9CE, 0x494844)
+
+    // MARK: - Brand accent
+    public static let brandAccent = UIColor.qf(0x3A3A3C, 0xEDEDED)
+    public static let brandAccentHover = UIColor.qf(0x313133, 0xF2F2F2)
+    public static let brandAccentPressed = UIColor.qf(0x28282A, 0xF7F7F7)
+    public static let textOnBrand = UIColor.qf(0xFFFFFF, 0x090C08)
+    public static let brandBackground = UIColor.qf(0xC9C9CE, 0x494844)
+    public static let textOnBrandBackground = UIColor.qf(0x0B0A0F, 0xF3F3F6)
+
+    // MARK: - Feedback
+    public static let error = UIColor.qf(0xF55155, 0xF97774)
+    public static let errorText = UIColor.qf(0xC1152B, 0xFFA19D)
+    public static let errorBg = UIColor.qf(0xFFE7E4, 0x562D2C)
+    public static let warning = UIColor.qf(0xC77912, 0xD19251)
+    public static let warningText = UIColor.qf(0x9B5100, 0xEDB073)
+    public static let warningBg = UIColor.qf(0xFFEEDD, 0x4A3623)
+    public static let success = UIColor.qf(0x2E9F3C, 0x56B25C)
+    public static let successText = UIColor.qf(0x007700, 0x70CB74)
+    public static let successBg = UIColor.qf(0xE0FAE0, 0x243C25)
+    public static let info = UIColor.qf(0x1778C9, 0x66A3E2)
+    public static let infoText = UIColor.qf(0x0867B1, 0x87C2FE)
+    public static let infoBg = UIColor.qf(0xE3F4FF, 0x293C50)
+    public static let notify = UIColor.qf(0x8B37C3, 0xA96CD3)
+    public static let notifyText = UIColor.qf(0x8548AC, 0xD9A7FE)
+    public static let notifyBg = UIColor.qf(0xFBEAFF, 0x433250)
+    public static let badge = UIColor.qf(0xC8102E, 0xFF8983)
+
+    // MARK: - Elevation
+    public static let shadowTint = UIColor.qf(0x0B0A0F, 0x000000)
 }

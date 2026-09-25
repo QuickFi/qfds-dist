@@ -589,15 +589,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
    --qf-container-background-wash-haze at runtime, and both FALL BACK to the
    page itself, so this rule is a flat colour until a credit line resolves and
    stays flat in light mode by construction. Do not hand-author the gradient:
-   the stops and the angle are the engine's contract, and light mode has no
-   chroma left under a white container/surface. */
+   the two glows (top-left and bottom-right, 120% radius so they meet in the
+   middle, haze ring at 75%, faded out at 100%) are the engine's contract, and
+   light mode has no chroma left under a white container/surface. */
 body {
   background:
-    linear-gradient(150deg,
-      var(--qf-container-background-wash, var(--qf-container-background)) 6%,
-      var(--qf-container-background-wash-haze, var(--qf-container-background)) 24%,
-      var(--qf-container-background) 74%,
-      var(--qf-container-background-wash, var(--qf-container-background)) 94%);
+    radial-gradient(ellipse 120% 120% at 0% 0%,
+      var(--qf-container-background-wash, var(--qf-container-background)) 0%,
+      var(--qf-container-background-wash-haze, var(--qf-container-background)) 75%,
+      transparent 100%),
+    radial-gradient(ellipse 120% 120% at 100% 100%,
+      var(--qf-container-background-wash, var(--qf-container-background)) 0%,
+      var(--qf-container-background-wash-haze, var(--qf-container-background)) 75%,
+      transparent 100%),
+    var(--qf-container-background);
   background-attachment: fixed;
   color: var(--qf-text-primary);
 }

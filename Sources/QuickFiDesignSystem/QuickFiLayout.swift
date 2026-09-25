@@ -191,6 +191,68 @@ public enum QuickFiMotion {
     }
 }
 
+// MARK: - Page wash
+
+/// The page: container/background with the credit line's brand wash over it —
+/// two radial glows, top-left and bottom-right, each running wash -> haze ->
+/// transparent (tokens/brand-engine.md, "The page wash"). Put it behind every
+/// screen's root instead of `QuickFiColor.background`:
+///
+///     content.quickFiPageWash(wash: brand.backgroundWash, haze: brand.backgroundWashHaze)
+///
+/// No conditional anywhere: the defaults are the static tokens, which EQUAL
+/// the page, so an unbranded screen — and every light screen, since the engine
+/// emits the page for both stops in light — paints the page over the page and
+/// comes out flat. The geometry is this SDK's contract with itself; an app never
+/// builds the gradient by hand, so a geometry change here is not a breaking one.
+public struct QuickFiPageWash: View {
+    /// Each glow's radius as a fraction of the page's diagonal / sqrt(2) — past
+    /// centre, so the two overlap. Mirrors BrandEngine.WASH_GLOW_RADIUS.
+    static let glowRadius: CGFloat = 1.20
+    /// Where the haze ring sits, as a fraction of the glow radius. Mirrors WASH_GLOW_HAZE.
+    static let glowHaze: CGFloat = 0.75
+    /// Where the glow has faded fully to the page. Mirrors WASH_GLOW_EDGE.
+    static let glowEdge: CGFloat = 1.00
+
+    let page: Color
+    let wash: Color
+    let haze: Color
+
+    public init(page: Color = QuickFiColor.background,
+                wash: Color = QuickFiColor.backgroundWash,
+                haze: Color = QuickFiColor.backgroundWashHaze) {
+        self.page = page; self.wash = wash; self.haze = haze
+    }
+
+    public var body: some View {
+        GeometryReader { geo in
+            // ponytail: CSS paints an ellipse 120% x 120%; RadialGradient is circular.
+            // Radius scaled so both glows meet at centre with the ellipse's coverage.
+            let r = Self.glowRadius * hypot(geo.size.width, geo.size.height) / sqrt(2)
+            let stops: [Gradient.Stop] = [
+                .init(color: wash, location: 0),
+                .init(color: haze, location: Self.glowHaze),
+                .init(color: .clear, location: Self.glowEdge),
+            ]
+            ZStack {
+                page
+                RadialGradient(stops: stops, center: .topLeading, startRadius: 0, endRadius: r)
+                RadialGradient(stops: stops, center: .bottomTrailing, startRadius: 0, endRadius: r)
+            }
+        }
+        .ignoresSafeArea()
+    }
+}
+
+public extension View {
+    /// See ``QuickFiPageWash``.
+    func quickFiPageWash(page: Color = QuickFiColor.background,
+                         wash: Color = QuickFiColor.backgroundWash,
+                         haze: Color = QuickFiColor.backgroundWashHaze) -> some View {
+        background(QuickFiPageWash(page: page, wash: wash, haze: haze))
+    }
+}
+
 // MARK: - Border width
 
 public enum QuickFiBorder {

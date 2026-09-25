@@ -4,7 +4,7 @@ Colour, typography, spacing, elevation and the runtime brand engine, for iOS, An
 
 **This repository is generated.** It is assembled by `scripts/build-dist.js` in QuickFi's private design-system repo and force-pushed here on every release. Pull requests and direct commits are overwritten by the next tag — raise anything you find with the design-system owner instead.
 
-Current release: **1.0.2**
+Current release: **1.1.0**
 
 **Why this repository is public.** Package managers (Swift Package Manager, jsDelivr, Maven Central) can only resolve a dependency from an unauthenticated public URL, so the design system's consumable artifacts have to live somewhere public. This repository is written solely by CI from a tagged release and contains only generated design tokens, licensed fonts and documentation — no source tooling, no credentials, no customer data — so nothing confidential leaves the private repo. Recorded here for SOC 2 asset classification.
 
@@ -16,10 +16,10 @@ Paste the link. The version is pinned in the URL, so the stylesheet never change
 
 ```html
 <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/QuickFi/qfds-dist@v1.0.2/web/quickfi.css">
+      href="https://cdn.jsdelivr.net/gh/QuickFi/qfds-dist@v1.1.0/web/quickfi.css">
 ```
 
-Swap `v1.0.2` for a later tag to take a new release. `@v1` also resolves, and floats to the newest `1.x` — convenient, but it means a release can change your styling without you doing anything.
+Swap `v1.1.0` for a later tag to take a new release. `@v1` also resolves, and floats to the newest `1.x` — convenient, but it means a release can change your styling without you doing anything.
 
 Every token is a custom property (`--qf-text-primary`, `--qf-space-md`, …) and every type role is a utility class (`.qf-body`, `.qf-numeric-lg`, …). Light and dark both ship; dark applies on `prefers-color-scheme` or on an explicit `data-theme="dark"`.
 
@@ -28,8 +28,10 @@ Every token is a custom property (`--qf-text-primary`, `--qf-space-md`, …) and
 Swift Package Manager, no credentials:
 
 ```swift
-.package(url: "https://github.com/QuickFi/qfds-dist.git", from: "1.0.2")
+.package(url: "https://github.com/QuickFi/qfds-dist.git", from: "1.1.0")
 ```
+
+SwiftUI:
 
 ```swift
 import QuickFiDesignSystem
@@ -38,6 +40,18 @@ Text("Monthly payment")
     .quickFiText(.label)
     .foregroundStyle(QuickFiColor.textPrimary)
     .padding(QuickFiSpacing.md)
+```
+
+UIKit — same tokens, same names, `UIColor` and `UIFont` typed:
+
+```swift
+label.font = QuickFiTextStyle.label.uiFont
+label.textColor = QuickFiUIColor.textPrimary
+view.backgroundColor = QuickFiUIColor.surface
+view.layer.cornerRadius = QuickFiRadius.lg
+// or, with line height and tracking in one go:
+label.attributedText = NSAttributedString(string: "Monthly payment",
+                                          attributes: QuickFiTextStyle.label.attributes)
 ```
 
 Work Sans ships inside the package and registers itself. Add nothing to your `Info.plist`, bundle no fonts.
@@ -60,7 +74,7 @@ dependencyResolutionManagement {
 
 ```kotlin
 // app/build.gradle.kts
-implementation("io.github.quickfi:design-system-android:1.0.2")
+implementation("io.github.quickfi:design-system-android:1.1.0")
 ```
 
 ```kotlin
