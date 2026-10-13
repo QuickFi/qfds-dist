@@ -377,6 +377,142 @@
 }
 
 /* ---------------------------------------------------------------
+   The credit-line brand swap (tokens/brand-engine.md, "The cross-fade,
+   specified"). platforms/web/quickfi-brand.js's applyBrand() writes the
+   derived values over the static ones above and sets data-qf-brand-swap on
+   the root for the length of the fade.
+
+   The fade animates the CUSTOM PROPERTIES, not each element's colours. That
+   needs them registered as <color> — an unregistered custom property is a
+   string and can only cut — and it is the only way the page wash can fade at
+   all: body paints it as a gradient, and CSS cannot transition one gradient
+   into another, but it can transition the colours a gradient reads. Every
+   var() reader follows for free, so no component declares a transition.
+
+   The registered set is exactly the keys deriveBrandTokens() returns —
+   generated from them, so the set that animates and the set applyBrand()
+   writes cannot differ. A browser without @property cuts instead of fading:
+   the colours still land, the transition is simply absent.
+   --------------------------------------------------------------- */
+@property --qf-container-background {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #F1F1F4;
+}
+@property --qf-container-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #FFFFFF;
+}
+@property --qf-container-surface-1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #E3E3E8;
+}
+@property --qf-container-surface-2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #D6D6DB;
+}
+@property --qf-container-subsurface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #D8D8DB;
+}
+@property --qf-action-selected {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #C9C9CE;
+}
+@property --qf-brand-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #3A3A3C;
+}
+@property --qf-brand-accent-hover {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #313133;
+}
+@property --qf-brand-accent-pressed {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #28282A;
+}
+@property --qf-text-on-brand {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #FFFFFF;
+}
+@property --qf-brand-background {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #C9C9CE;
+}
+@property --qf-text-on-brand-background {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0B0A0F;
+}
+@property --qf-text-link {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0867B1;
+}
+@property --qf-border-focus {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0B0A0F;
+}
+@property --qf-text-cursor {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0B0A0F;
+}
+@property --qf-text-selection-bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #C9C9CE;
+}
+@property --qf-container-background-wash {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #F1F1F4;
+}
+@property --qf-container-background-wash-haze {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #F1F1F4;
+}
+
+/* [data-theme] descendants re-declare every colour themselves, so they need
+   the transition too — inheriting an animated value does not help an element
+   that overrides it. */
+[data-qf-brand-swap], [data-qf-brand-swap] [data-theme] {
+  transition-property:
+    --qf-container-background,
+    --qf-container-surface,
+    --qf-container-surface-1,
+    --qf-container-surface-2,
+    --qf-container-subsurface,
+    --qf-action-selected,
+    --qf-brand-accent,
+    --qf-brand-accent-hover,
+    --qf-brand-accent-pressed,
+    --qf-text-on-brand,
+    --qf-brand-background,
+    --qf-text-on-brand-background,
+    --qf-text-link,
+    --qf-border-focus,
+    --qf-text-cursor,
+    --qf-text-selection-bg,
+    --qf-container-background-wash,
+    --qf-container-background-wash-haze;
+  transition-duration: var(--qf-brand-swap);
+  transition-timing-function: var(--qf-brand-swap-ease);
+}
+
+/* ---------------------------------------------------------------
    Type utilities. Numerics carry tabular figures because payment
    columns read as broken without them.
    --------------------------------------------------------------- */
@@ -686,10 +822,28 @@ body {
      tokens/brand-engine.md's contract names ("a transition, not a
      correction"), and it would leave web the only platform that hard-cuts
      while iOS and Android both collapse to a short fade. Collapsed to
-     --qf-brand-swap-reduced, not removed. The app sets data-qf-brand-swap on
-     the theme root for the duration of the swap. */
-  [data-qf-brand-swap], [data-qf-brand-swap] *, [data-qf-brand-swap] *::before, [data-qf-brand-swap] *::after {
-    transition-property: background-color, color, border-color, outline-color, fill, stroke !important;
+     --qf-brand-swap-reduced, not removed. Same selectors as the swap rule
+     above: the custom properties fade, nothing else does. */
+  [data-qf-brand-swap], [data-qf-brand-swap] [data-theme] {
+    transition-property:
+      --qf-container-background,
+      --qf-container-surface,
+      --qf-container-surface-1,
+      --qf-container-surface-2,
+      --qf-container-subsurface,
+      --qf-action-selected,
+      --qf-brand-accent,
+      --qf-brand-accent-hover,
+      --qf-brand-accent-pressed,
+      --qf-text-on-brand,
+      --qf-brand-background,
+      --qf-text-on-brand-background,
+      --qf-text-link,
+      --qf-border-focus,
+      --qf-text-cursor,
+      --qf-text-selection-bg,
+      --qf-container-background-wash,
+      --qf-container-background-wash-haze !important;
     transition-duration: var(--qf-brand-swap-reduced) !important;
     transition-timing-function: var(--qf-brand-swap-ease) !important;
   }
