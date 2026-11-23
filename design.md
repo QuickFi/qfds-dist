@@ -120,13 +120,13 @@ SUCCESS is not a BRAND intent under another name. Its hue is aligned to `feedbac
 
 ### Feedback — three roles per status, always used together
 
-- **`{status}`** — icon glyphs, solid fills, 2px borders. Tuned to clear 3:1 for graphics (measured ≈3.4).
-- **`{status}-text`** — text on the tint. The only one of the three safe to read.
+- **`{status}`** — icon glyphs on a surface, solid fills, 2px borders. Tuned to clear 3:1 for graphics against `container/surface` (measured ≈3.4) — NOT against its own `-bg` tint, where light error measures 2.88:1.
+- **`{status}-text`** — text on the tint, and any icon on the tint. The only one of the three safe to read.
 - **`{status}-bg`** — the tint.
 
-A banner is: `-bg` behind, `{status}` on the icon, `-text` on the words. **Never** use `{status}` for text on `{status}-bg`.
+A banner is: `-bg` behind, `-text` on the icon AND the words. **Never** use `{status}` on `{status}-bg`, for text or for the icon.
 
-| Status | Icon | Text | Tint |
+| Status | `{status}` — graphic | `{status}-text` — words + banner icon | `{status}-bg` — tint |
 |---|---|---|---|
 | error | `#F55155` / `#F97774` | `#C1152B` / `#FFA19D` | `#FFE7E4` / `#562D2C` |
 | warning | `#C77912` / `#D19251` | `#9B5100` / `#EDB073` | `#FFEEDD` / `#4A3623` |
@@ -344,7 +344,7 @@ A field is the only thing that may sit directly on the background. Cards, rows, 
 
 **List row** — `container/surface`, `touch/list-row` min height (`list-row-two-line` with a subtitle), `label` primary line, `bodySmall` secondary in `text/secondary`.
 
-**Status banner** — `feedback/{status}-bg` fill, `radius/sm`, `feedback/{status}` icon, `feedback/{status}-text` words. Icon and label both required.
+**Status banner** — `feedback/{status}-bg` fill, `radius/sm`, `feedback/{status}-text` icon and words. Icon and label both required.
 
 **Count badge** — `feedback/badge` fill, fully rounded, `text/on-badge` numeral in `caption` at `label` weight, tabular figures. Minimum 16pt diameter, hit area untouched — a badge is not a target. Never `feedback/error` as the fill.
 
