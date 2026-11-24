@@ -100,6 +100,15 @@
   --qf-elevation-raised: 0.25rem;   /* 4px */
   --qf-elevation-floating: 0.5rem;   /* 8px */
 
+  /* ---- layout (web only) ----
+     Breakpoints are 600 / 720 / 1100 px, min-width; tables stack below 720.
+     They are NOT variables: var() is ignored inside an @media or @container
+     condition, so a --qf-bp-* would look usable and silently do nothing.
+     Write the number in the query. The container and gutter ARE variables,
+     because max-width and padding read var() normally. */
+  --qf-container-max: 1280px;
+  --qf-gutter: 16px;
+
   /* ---- motion ----
      Only the credit-line brand swap is tokenised here; the rest of this
      system's durations are mobile additions (see QuickFiMotion on iOS and
@@ -637,11 +646,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Filled buttons come in three intents — neutral (the default: every primary
+/* Filled buttons come in five intents — neutral (the default: every primary
    and secondary action binds here, brand-agnostic by design — there is no
-   BRAND intent), notify, danger — each with its own hover and pressed fill
-   and one shared disabled fill, because a dead button has no intent. Every
-   intent, every state carries text/on-action. The credit line's colour shows
+   BRAND intent), notify, danger, success, info — each with its own hover and
+   pressed fill and one shared disabled fill, because a dead button has no
+   intent. Every intent carries text/on-action except SUCCESS, which carries
+   text/on-action-success (see design.md, Action). The credit line's colour shows
    up elsewhere, as an accent — never as a button fill; see
    tokens/brand-engine.md. */
 .qf-button-filled {
@@ -665,9 +675,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .qf-button-filled--danger { background: var(--qf-action-filled-danger); }
 .qf-button-filled--danger:hover { background: var(--qf-action-filled-danger-hover); }
 .qf-button-filled--danger:active { background: var(--qf-action-filled-danger-pressed); }
+/* Success: a positive, affirming action the product calls out. Its own label
+   token — white in light is a deliberate, unaudited exception. */
+.qf-button-filled--success { background: var(--qf-action-filled-success); color: var(--qf-text-on-action-success); }
+.qf-button-filled--success:hover { background: var(--qf-action-filled-success-hover); }
+.qf-button-filled--success:active { background: var(--qf-action-filled-success-pressed); }
+/* Info: an advisory action next to an informational message. */
+.qf-button-filled--info { background: var(--qf-action-filled-info); }
+.qf-button-filled--info:hover { background: var(--qf-action-filled-info-hover); }
+.qf-button-filled--info:active { background: var(--qf-action-filled-info-pressed); }
 .qf-button-filled:disabled,
 .qf-button-filled--notify:disabled,
-.qf-button-filled--danger:disabled {
+.qf-button-filled--danger:disabled,
+.qf-button-filled--success:disabled,
+.qf-button-filled--info:disabled {
   background: var(--qf-action-filled-disabled);
   color: var(--qf-text-on-action-disabled);
   cursor: default;
@@ -694,7 +715,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .qf-button-outline:hover,
 .qf-button-outline:active { background: var(--qf-action-selected); }
 .qf-button-outline:disabled {
-  border-color: var(--qf-border-default);
+  border-color: var(--qf-action-outline-disabled);
   color: var(--qf-text-disabled);
   background: transparent;
   cursor: default;
@@ -742,9 +763,13 @@ body {
   background-attachment: fixed;
   color: var(--qf-text-primary);
 }
-.qf-surface { background: var(--qf-container-surface); border-radius: var(--qf-radius-lg); }
-.qf-surface-1 { background: var(--qf-container-surface-1); border-radius: var(--qf-radius-lg); }
-.qf-surface-2 { background: var(--qf-container-surface-2); border-radius: var(--qf-radius-lg); }
+/* A surface class is a card: radius/xl is the card FLOOR (design.md, Radius),
+   so these sit on it. radius/lg is the button value, never a card's. */
+@media (min-width: 720px) { :root { --qf-gutter: 24px; } }
+
+.qf-surface { background: var(--qf-container-surface); border-radius: var(--qf-radius-xl); }
+.qf-surface-1 { background: var(--qf-container-surface-1); border-radius: var(--qf-radius-xl); }
+.qf-surface-2 { background: var(--qf-container-surface-2); border-radius: var(--qf-radius-xl); }
 .qf-subsurface { background: var(--qf-container-subsurface); border-radius: var(--qf-radius-md); }
 
 /* ---------------------------------------------------------------
@@ -813,7 +838,22 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+  /* Remove MOVEMENT, keep change. Reduce Motion is about things that travel,
+     scale or spin; a fade or a colour change moves nothing, and cutting it
+     makes state changes read as glitches. So transitions are narrowed to
+     opacity and colour properties (transform, translate, scale, rotate and
+     every layout property drop out and snap), and keyframe animations — which
+     CSS cannot filter by property — run in a single near-instant step, so a
+     keyframe that moves something lands at its end state without travelling.
+     A keyframe fade is cut along with it; express a fade as a transition if it
+     must survive Reduce Motion. */
+  *, *::before, *::after {
+    transition-property: opacity, color, background-color, border-color,
+      outline-color, text-decoration-color, fill, stroke, box-shadow !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 
   /* The credit-line brand swap is the one carve-out. Reduce Motion is about
      movement, and this transition moves nothing — it only interpolates

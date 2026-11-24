@@ -152,7 +152,7 @@ public enum QuickFiColor {
     /// Pressed state of a danger filled button.
     public static let actionFilledDangerPressed = Color.qf(0xA00C22, 0xFF9E99)
     /// FILLED button, SUCCESS intent — a positive, affirming action the product itself calls out: Save, Approve, Complete.
-    /// Aligned to feedback/success, NOT to brand/green — this is a status hue every credit line shares identically, not QuickFi's own per-credit-line seed. Pair with textOnActionSuccess, never textOnAction (white fails 4.5:1 against this fill in both modes).
+    /// Aligned to feedback/success, NOT to brand/green — this is a status hue every credit line shares identically, not QuickFi's own per-credit-line seed. Pair with textOnActionSuccess, never textOnAction — a separate token so the success label can move without moving every other intent. It is white in light (3.42:1 on this fill — a deliberate, unaudited exception, see textOnActionSuccess) and near-black in dark.
     public static let actionFilledSuccess = Color.qf(0x2E9F3C, 0x56B25C)
     /// Hover state of a success filled button — web only.
     /// Pair with textOnActionSuccess.

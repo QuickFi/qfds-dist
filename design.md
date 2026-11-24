@@ -98,7 +98,7 @@ Format: light / dark.
 
 ### Action — fills of an interactive control, by intent and state
 
-Filled buttons come in **four intents**. Every intent except SUCCESS carries `text/on-action`; SUCCESS carries `text/on-action-success`. Hover is web-only; mobile has no hover.
+Filled buttons come in **five intents**: neutral, notify, danger, success, info. Every intent except SUCCESS carries `text/on-action`; SUCCESS carries `text/on-action-success`. Hover is web-only; mobile has no hover.
 
 There is deliberately no BRAND intent. White-labelling means a button cannot assume the partner's credit line is any particular hue, so the primary action's fill is brand-agnostic NEUTRAL — not a fallback tier, the only tier. The credit line's colour still appears, but as an accent, never a button fill; see the brand engine section below.
 
@@ -109,7 +109,8 @@ SUCCESS is not a BRAND intent under another name. Its hue is aligned to `feedbac
 | `action/filled/neutral` | **The default filled weight — every primary and secondary action binds here**: Sign now, Manage, View statement alike. | `#3A3A3C` / `#EDEDED` | `#313133` / `#F2F2F2` | `#28282A` / `#F7F7F7` |
 | `action/filled/notify` | Notification and announcement actions. Same purple as `feedback/notify`. | `#8B37C3` / `#A96CD3` | `#7F31B4` / `#B27AD8` | `#7229A5` / `#BB88DE` |
 | `action/filled/danger` | **Terminal and destructive actions**: Delete, Cancel contract. Never the primary path; always behind a confirmation. Same red family as `feedback/badge`. | `#C8102E` / `#FF8983` | `#B40E27` / `#FF938E` | `#A00C22` / `#FF9E99` |
-| `action/filled/success` | **A positive, affirming action the product calls out**: Save, Approve, Complete. Same green family as `feedback/success`. Pair with `text/on-action-success`, never `text/on-action` — white fails 4.5:1 on this fill in both modes. | `#2E9F3C` / `#56B25C` | `#2A9237` / `#64B869` | `#288C35` / `#6ABB70` |
+| `action/filled/success` | **A positive, affirming action the product calls out**: Save, Approve, Complete. Same green family as `feedback/success`. Pair with `text/on-action-success`, never `text/on-action`: white in light — 3.42:1 here, a deliberate exception with no audit row (see `text/on-action-success`) — and near-black in dark. | `#2E9F3C` / `#56B25C` | `#2A9237` / `#64B869` | `#288C35` / `#6ABB70` |
+| `action/filled/info` | **An advisory action the product surfaces alongside an informational message**: View details, See schedule, Learn how this works. Same blue family as `feedback/info`. Takes `text/on-action` — 4.60:1 in light, the thinnest label margin of any intent. | `#1778C9` / `#66A3E2` | `#156EB9` / `#72AAE4` | `#146AB1` / `#78AEE5` |
 
 | Token | Values | Use |
 |---|---|---|
@@ -260,7 +261,7 @@ Spacing is on a 4pt base. `16` is the standard screen edge inset; `24` separates
 
 Two rules, and they are different KINDS of rule. Read the difference before binding anything:
 
-**A button is `radius/lg` (12dp), fixed.** Not a minimum, not a default — the value. Every tier (FILLED, OUTLINE, TEXT), every intent, every size, every platform. A button that rounds differently from the button beside it reads as a different control, and the one thing a button must not be is ambiguous about being a button. There is deliberately no larger-button or pill-button variant in this system: a capsule is `radius/full`, which no button binds.
+**A button is `radius/lg` (12dp), fixed.** Not a minimum, not a default — the value. Every tier (FILLED, OUTLINE, TEXT), every intent, every size, every platform. A button that rounds differently from the button beside it reads as a different control, and the one thing a button must not be is ambiguous about being a button. There is deliberately no larger-button or pill-button variant in this system: a capsule is a platform idiom (`radius/full` names it, but it is not a token — CSS `999px`, SwiftUI `Capsule()`, Compose `CircleShape`), and no button uses one.
 
 **A card is `radius/xl` (16dp) MINIMUM.** A floor, not a value. A card may round larger where the composition calls for it — `radius/sheet` (24dp) is the top of the authored ladder — but never smaller. Below 16dp a card stops reading as a distinct surface and starts reading as a slightly-rounded rectangle of page, which is precisely the job `container/surface`'s fill is doing and does not need help with.
 
@@ -278,7 +279,7 @@ Anything reading `shapes.large` already lands on the floor — that slot binds `
 
 **Every border this system DRAWS is 2px** — a button outline, a divider, a table rule, the focus ring. One width token, `border/width`. **A text field is the exception:** its resting border takes the platform's own default width, because the field is a native control and its stroke is not ours to set — Compose's `TextField` owns its indicator thickness, UIKit and SwiftUI own theirs, and a browser owns the `input` default. Set the field's border *colour* and leave its width alone.
 
-**Touch minimums:** 44pt target (Apple floor; Material asks 48), 8pt between adjacent targets, 48pt controls, 56pt single-line rows, 72pt two-line rows. These do not apply to pointer input on web.
+**Touch minimums:** 44pt target (Apple floor; Material asks 48), 8pt between adjacent targets, 48pt controls, 56pt single-line rows, 72pt two-line rows. **On web, pointer targets are at least 24×24 CSS px**, or spaced so a 24px circle centred on each target does not overlap another (WCAG 2.5.8, AA) — a mouse is precise, but not that precise. A touch-first web layout, anything a phone renders, uses `touch/min-target` (44) as on mobile. The mobile values above do not change.
 
 **Icon sizes** are a glyph scale, not a container scale: `icon/md` (20) is the default, not Material's 24. Avatars and chat thumbnails are deliberately outside it — a separate scale with its own rhythm.
 
@@ -418,18 +419,19 @@ What *does* cross platforms: the tokens, the type roles, the iconography, the co
 
 ## Web
 
-The token layer carries over unchanged. Three differences:
+The token layer carries over unchanged. Four differences:
 
 - **Links need a non-colour cue.** Colour alone fails WCAG 1.4.1. Add an underline.
 - **The focus ring is mandatory and frequently seen** — a keyboard user's only orientation cue.
 - **Surface layers become max-width containers.** Keep a consistent container rhythm or the background tint starts reading as dead space.
+- **Layout steps at 600 / 720 / 1100 px (min-width); 720 is where tables stack.** Content sits in a container of at most 1280px (`--qf-container-max`) with a 16px gutter, 24px from 720 up (`--qf-gutter`). The breakpoints are numbers, not variables — CSS ignores `var()` inside a media query.
 
 ---
 
 ## Known gaps
 
 - **Hover exists only on the filled tier.** `action/filled/{intent}-hover` is web-only; mobile has no hover. Outline and text tiers hover with their pressed fills. **Do not invent additional hover values.**
-- **Elevation is scaffolding, not token data.** The two shadow levels live in each platform's hand-written layer (`QuickFiElevation`, `--qf-shadow-*`) rather than in `tokens/values.json` — a composite shadow does not fit the float-only token schema. The recipes are documented in *Elevation* above and must be changed in all three places together.
+- **Elevation is scaffolding, not token data.** The three shadow levels (`lifted`, `raised`, `floating`; `flat` casts none) live in each platform's hand-written layer (`QuickFiElevation`, `--qf-shadow-*`) rather than in `tokens/values.json` — a composite shadow does not fit the float-only token schema. The recipes are documented in *Elevation* above and must be changed in all three places together.
 
 ---
 
