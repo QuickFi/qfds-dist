@@ -312,7 +312,7 @@ Two layers per level, a broad ambient pass and a tight contact pass; one layer r
 
 | Tier | Fill | Border | Label | Hover (web) | Pressed | Disabled |
 |---|---|---|---|---|---|---|
-| Filled | `action/filled/{intent}` — neutral · notify · danger · success | — | `text/on-action` (`text/on-action-success` for the success intent) | `action/filled/{intent}-hover` | `action/filled/{intent}-pressed` | `action/filled/disabled` + `text/on-action-disabled` |
+| Filled | `action/filled/{intent}` — neutral · notify · danger · success · info | — | `text/on-action` (`text/on-action-success` for the success intent) | `action/filled/{intent}-hover` | `action/filled/{intent}-pressed` | `action/filled/disabled` + `text/on-action-disabled` |
 | Outline | none (transparent) | `action/outline` | `text/secondary` | `action/selected` | `action/selected` | `action/outline-disabled` + `text/disabled` |
 | Text | none | none | `text/link` | `action/selected` + `text/primary` label | `action/selected` + `text/primary` label | `text/disabled` |
 
@@ -330,7 +330,7 @@ Press feedback on outline and text tiers is deliberately subtle (1.11–1.21) be
 
 **Card** — `container/surface` fill, `radius/xl` (16dp) or larger — a floor, not a value; see *Radius* above — `spacing/sm` to `spacing/md` padding. No border needed on a tinted background.
 
-**Text input** — `container/subsurface` fill, `radius/md`, `touch/control-height` min height, `text/primary` value, `text/secondary` placeholder (NOT `text/tertiary` — it measures 3.62:1 light / 3.86:1 dark in this well, below the 4.5:1 floor). On focus, `border/focus` at 2px.
+**Text input** — `container/subsurface` fill, `radius/md`, `touch/control-height` min height, `text/primary` value, `text/secondary` placeholder (NOT `text/tertiary` — it measures 3.62:1 light / 3.86:1 dark in this well, below the 4.5:1 floor). On focus, `border/focus` at 2px. On web this is `.qf-input`, which also binds the caret to `text/cursor` and selected text to `text/selection-bg` — never leave a field on the browser's default placeholder grey, which measures about 3.2:1 light / 2.4:1 dark in this well.
 
 **A field keeps `border/default` as its border colour wherever it sits** — one field, one look. The *width* is the platform's default, never `border/width`. What changes with the backdrop is only how much work that border is doing:
 
@@ -419,10 +419,12 @@ What *does* cross platforms: the tokens, the type roles, the iconography, the co
 
 ## Web
 
-The token layer carries over unchanged. Four differences:
+The token layer carries over unchanged. Six differences:
 
 - **Links need a non-colour cue.** Colour alone fails WCAG 1.4.1. Add an underline.
 - **The focus ring is mandatory and frequently seen** — a keyboard user's only orientation cue.
+- **A disabled button may be `aria-disabled="true"` instead of `disabled`** — it stays focusable, so a screen reader can reach it and say why. `quickfi.css` styles both the same; CSS cannot stop the click, so the app must ignore activation on an `aria-disabled` button.
+- **Forced colours (Windows High Contrast) removes every fill.** `quickfi.css` gives buttons, surfaces and the badge a transparent edge that the system paints in that mode, and draws filled buttons solid in the user's own `ButtonText`/`ButtonFace` so primary still reads as primary. Never set `forced-color-adjust: none` with your own colours — that overrides the palette the user chose.
 - **Surface layers become max-width containers.** Keep a consistent container rhythm or the background tint starts reading as dead space.
 - **Layout steps at 600 / 720 / 1100 px (min-width); 720 is where tables stack.** Content sits in a container of at most 1280px (`--qf-container-max`) with a 16px gutter, 24px from 720 up (`--qf-gutter`). The breakpoints are numbers, not variables — CSS ignores `var()` inside a media query.
 

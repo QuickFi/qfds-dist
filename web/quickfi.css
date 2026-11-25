@@ -638,6 +638,28 @@ a.qf-link {
   text-underline-offset: 3px;
 }
 
+/* The text field. A native control, so its border WIDTH is left to the
+   browser (design.md: set the field's border colour, not its width). The
+   placeholder is text/secondary — never the browser default, which measured
+   3.24:1 light / 2.37:1 dark on this fill (Chrome's #757575), and never
+   text/tertiary. opacity: 1 because Firefox fades placeholders by default.
+   The caret and the selection wash are brand-derived (text/cursor,
+   text/selection-bg); selected text keeps text/primary, the pairing
+   tokens/audit.json rates on that wash. */
+.qf-input {
+  background: var(--qf-container-subsurface);
+  color: var(--qf-text-primary);
+  border-style: solid;
+  border-color: var(--qf-border-default);
+  border-radius: var(--qf-radius-md);
+  min-height: var(--qf-touch-control-height);
+  font-family: var(--qf-font-body);
+  font-size: var(--qf-body-size);
+  caret-color: var(--qf-text-cursor);
+}
+.qf-input::placeholder { color: var(--qf-text-secondary); opacity: 1; }
+.qf-input::selection { background: var(--qf-text-selection-bg); color: var(--qf-text-primary); }
+
 /* On web the focus ring is a keyboard user's only orientation cue. */
 .qf-focusable:focus-visible,
 a:focus-visible, button:focus-visible,
@@ -655,6 +677,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
    up elsewhere, as an accent — never as a button fill; see
    tokens/brand-engine.md. */
 .qf-button-filled {
+  /* A transparent edge: invisible normally, painted by the system in forced
+     colours (Windows High Contrast), where every fill is removed and a
+     border-less button would be bare text. Outline, not border, so the box
+     does not grow; :focus-visible replaces it with the real ring. */
+  outline: var(--qf-border-width) solid transparent;
+  outline-offset: calc(-1 * var(--qf-border-width));
   background: var(--qf-action-filled-neutral);
   color: var(--qf-text-on-action);
   border-radius: var(--qf-radius-lg);
@@ -688,7 +716,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .qf-button-filled--notify:disabled,
 .qf-button-filled--danger:disabled,
 .qf-button-filled--success:disabled,
-.qf-button-filled--info:disabled {
+.qf-button-filled--info:disabled,
+.qf-button-filled[aria-disabled="true"] {
   background: var(--qf-action-filled-disabled);
   color: var(--qf-text-on-action-disabled);
   cursor: default;
@@ -714,7 +743,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 .qf-button-outline:hover,
 .qf-button-outline:active { background: var(--qf-action-selected); }
-.qf-button-outline:disabled {
+.qf-button-outline:disabled,
+.qf-button-outline[aria-disabled="true"] {
   border-color: var(--qf-action-outline-disabled);
   color: var(--qf-text-disabled);
   background: transparent;
@@ -722,6 +752,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .qf-button-text {
+  outline: var(--qf-border-width) solid transparent;
+  outline-offset: calc(-1 * var(--qf-border-width));
   background: transparent;
   color: var(--qf-text-link);
   border: 0;
@@ -737,7 +769,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
    not permitted. */
 .qf-button-text:hover,
 .qf-button-text:active { background: var(--qf-action-selected); color: var(--qf-text-primary); }
-.qf-button-text:disabled { color: var(--qf-text-disabled); background: transparent; cursor: default; }
+.qf-button-text:disabled,
+.qf-button-text[aria-disabled="true"] { color: var(--qf-text-disabled); background: transparent; cursor: default; }
 
 /* The background is always tinted, so a surface reads by fill and needs no
    border. Nothing sits directly on the background except section headers. */
@@ -770,6 +803,12 @@ body {
 .qf-surface { background: var(--qf-container-surface); border-radius: var(--qf-radius-xl); }
 .qf-surface-1 { background: var(--qf-container-surface-1); border-radius: var(--qf-radius-xl); }
 .qf-surface-2 { background: var(--qf-container-surface-2); border-radius: var(--qf-radius-xl); }
+/* Same transparent edge as the buttons: a surface reads by fill alone, and
+   forced colours removes the fill. */
+.qf-surface, .qf-surface-1, .qf-surface-2 {
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+}
 .qf-subsurface { background: var(--qf-container-subsurface); border-radius: var(--qf-radius-md); }
 
 /* ---------------------------------------------------------------
@@ -835,6 +874,30 @@ body {
   min-width: 18px;
   text-align: center;
   font-variant-numeric: tabular-nums;
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+}
+
+/* Forced colours (Windows High Contrast). The transparent edges above become
+   visible on their own. What forced colours also flattens is HIERARCHY: a
+   filled and an outline button both end up as text in a box. So every filled
+   intent is painted solid in the user's OWN system colours — ButtonText fill,
+   ButtonFace label — which keeps primary distinct from secondary without
+   overriding the palette the user chose. A disabled filled button reads as
+   GrayText on Canvas, the system's own disabled pair. */
+@media (forced-colors: active) {
+  .qf-button-filled {
+    forced-color-adjust: none;
+    background: ButtonText;
+    color: ButtonFace;
+    outline-color: ButtonText;
+  }
+  .qf-button-filled:disabled,
+  .qf-button-filled[aria-disabled="true"] {
+    background: Canvas;
+    color: GrayText;
+    outline-color: GrayText;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
